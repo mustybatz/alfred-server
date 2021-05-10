@@ -12,9 +12,13 @@ public class ConfigurationManager {
     private static ConfigurationManager MyConfigurationManager;
     private static Configuration myCurrentConfiguration;
 
-    private ConfigurationManager(){
+    private ConfigurationManager(){ }
 
-    }
+    /**
+     * ConfigurationManager class is a singleton, on this function we make sure that the object is only
+     * instantiated once.
+     * @return
+     */
     public static ConfigurationManager getInstance(){
         if (MyConfigurationManager == null){
             MyConfigurationManager= new ConfigurationManager();
@@ -22,9 +26,14 @@ public class ConfigurationManager {
         return MyConfigurationManager;
     }
 
+    /**
+     * Function that seeks for a given configuration file and loads it's content into a class.
+     * @param filePath
+     */
     public void LoadConfigurationFile(String filePath) {
         FileReader fileReader = null;
         try {
+            // We open the file.
             fileReader = new FileReader(filePath);
         } catch (FileNotFoundException e) {
             throw new HttpConfigurationExeption(e);
@@ -36,6 +45,7 @@ public class ConfigurationManager {
 
         try {
             while ( (i = fileReader.read()) != -1 ) {
+                // We read the file and append it's contents into a stringBuffer
                 sb.append((char)i);
             }
         } catch (IOException e) {
@@ -44,18 +54,25 @@ public class ConfigurationManager {
 
         JsonNode conf = null;
         try {
+            // We parse the json into a JsonNode
             conf = Json.parse(sb.toString());
         } catch (IOException e) {
             throw new HttpConfigurationExeption("Error parsing the configuration file", e);
         }
 
         try {
+            // If everything went alright, the json is serialized into a Configuration object.
             myCurrentConfiguration = Json.fromJson(conf, Configuration.class);
         } catch (JsonProcessingException e) {
             throw new HttpConfigurationExeption("Error parsing the configuration file, internal", e);
         }
 
     }
+
+    /**
+     * Function that returns the current loaded configuration.
+     * @return Configuration object containing port and webroot.
+     */
     public Configuration getCurrentConfig(){
         if( myCurrentConfiguration == null ) {
             throw new HttpConfigurationExeption("No current configuration set");

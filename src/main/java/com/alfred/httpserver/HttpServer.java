@@ -13,6 +13,13 @@ public class HttpServer {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(HttpServer.class);
 
+    /**
+     * On this function the server is started and the httpconf.json file is loaded, parsed and serialized into
+     * a Configuration Object.
+     *
+     * Then we instantiate a ServerListenerThread object which starts listening on a specified port and it can
+     * serve files that exists on the webroot location.
+     */
     public static void main(String[] args) {
 
         LOGGER.info("Server starting...");
@@ -25,7 +32,7 @@ public class HttpServer {
 
         try {
             ServerListenerThread serverListenerThread = new ServerListenerThread(conf.getPort(), conf.getWebroot());
-            serverListenerThread.run();
+            serverListenerThread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
