@@ -14,19 +14,25 @@ public class RequestTargetHandler {
     protected String webroot;
     protected String target;
 
-    public RequestTargetHandler(String webroot, String target) {
+    public RequestTargetHandler(String webroot, String file) {
         this.webroot = webroot;
 
-        if (target.equals("/")) {
+        if (file.equals("/")) {
             this.target = "\\index.html";
         } else {
-            this.target = target.replace("/", "\\");
+            this.target = file.replace("/", "\\");
         }
     }
 
-    public byte[] seekFile() throws HttpParsingException {
+    public static byte[] seekFile(String webroot, String target) throws HttpParsingException {
 
-        Path path = Paths.get(this.webroot  + this.target);
+        if(target.equals("/")) {
+            target = "\\index.html";
+        } else {
+            target = target.replaceAll("//", "\\");
+        }
+
+        Path path = Paths.get(webroot + target);
         try {
             return Files.readAllBytes(path);
         } catch (IOException e) {

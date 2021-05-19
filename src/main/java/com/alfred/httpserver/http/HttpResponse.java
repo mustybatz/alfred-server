@@ -1,25 +1,48 @@
 package com.alfred.httpserver.http;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class HttpResponse {
     private final String HTTP_VERSION = "HTTP/1.1";
-    private final String CRLF = "\r\n";
+    private final static String CRLF = "\r\n";
 
-    protected OutputStream response;
-    protected HttpStatusCode statusCode;
-    protected String reasonPhrase;
-    public HttpResponse(HttpStatusCode statusCode, String reasonPhrase) {
-        this.statusCode = statusCode;
-        this.reasonPhrase = reasonPhrase;
+    public static void sendHttpResponse(OutputStream response, HttpStatusCode code, String message, byte[] target) {
+        String responseString = "HTTP/1.1 " + code.STATUS_CODE +  " " + message + CRLF +
+                "Content-Length: " + target.length + CRLF + CRLF;
+
+        try {
+            response.write(responseString.getBytes());
+            response.write(target);
+            response.write((CRLF + CRLF).getBytes());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public void sendResponse (OutputStream outputStream) {
-        response = outputStream;
-    }
+    public static void sendHttpResponse(OutputStream response, HttpStatusCode code, String message) {
+        String responseString = "HTTP/1.1 " + code.STATUS_CODE +  " " + message + CRLF +
+                CRLF + CRLF;
 
-    public String toString() {
-        return HTTP_VERSION + statusCode.toString() + CRLF;
+        try {
+            response.write(responseString.getBytes());
+            response.write((CRLF + CRLF).getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

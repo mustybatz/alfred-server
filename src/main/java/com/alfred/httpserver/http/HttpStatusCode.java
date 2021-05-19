@@ -6,7 +6,7 @@ package com.alfred.httpserver.http;
 public enum HttpStatusCode {
 
     /** -- SUCCESS CODES **/
-    CLIENT_OK_200(400, "Success"),
+    CLIENT_OK_200(200, "Success"),
 
     /* --- CLIENT ERRORS --- */
     CLIENT_ERROR_400_BAD_REQUEST(400, "Bad Request"),

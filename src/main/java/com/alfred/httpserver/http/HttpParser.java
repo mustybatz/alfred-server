@@ -98,13 +98,13 @@ public class HttpParser {
                 // If our HTTP method has not been parsed, we parse it.
                 if(!methodParsed) {
                     LOGGER.debug("REQUEST LINE METHOD TO PROCESS: {}", processingDataBuffer.toString());
-                    methodParsed = true;
                     request.setMethod(processingDataBuffer.toString());
+                    methodParsed = true;
                     // Otherwise it means that we need to parse the target.
                 } else if(!requestTargetParsed) {
                     LOGGER.debug("REQUEST LINE TARGET TO PROCESS: {}", processingDataBuffer.toString());
-                    requestTargetParsed = true;
                     request.setRequestTarget(processingDataBuffer.toString());
+                    requestTargetParsed = true;
                 } else {
                     throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
                 }

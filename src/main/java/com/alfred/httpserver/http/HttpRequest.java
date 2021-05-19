@@ -1,5 +1,7 @@
 package com.alfred.httpserver.http;
 
+import java.util.Objects;
+
 public class HttpRequest extends HttpMessage{
 
     private HttpMethod method;
@@ -34,7 +36,7 @@ public class HttpRequest extends HttpMessage{
     }
 
     public String getRequestTarget() {
-        return requestTarget;
+        return Objects.requireNonNullElse(this.requestTarget, "/");
     }
 
     public String getHttpVer() {

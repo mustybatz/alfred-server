@@ -1,10 +1,7 @@
 package com.alfred.httpserver.core;
 
 import com.alfred.httpserver.config.ConfigurationManager;
-import com.alfred.httpserver.http.HttpParser;
-import com.alfred.httpserver.http.HttpParsingException;
-import com.alfred.httpserver.http.HttpRequest;
-import com.alfred.httpserver.http.RequestTargetHandler;
+import com.alfred.httpserver.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,8 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+
 
 public class HttpConnectionWorkerThread extends Thread {
 
@@ -49,42 +45,38 @@ public class HttpConnectionWorkerThread extends Thread {
             try {
                 request = parser.parseHttpRequest(inputStream);
             } catch (HttpParsingException e) {
-                // TODO Handle request here
-                e.printStackTrace();
+                HttpResponse.sendHttpResponse(
+                        outputStream,
+                        e.getErrorCode(),
+                        e.getMessage()
+                        );
+                return;
             }
-
-            assert request != null;
-            RequestTargetHandler targetHandler = new RequestTargetHandler(
-                    ConfigurationManager.getInstance().getCurrentConfig().getWebroot(),
-                    request.getRequestTarget()
-            );
-
 
             byte[] target = null;
+            String webroot = ConfigurationManager.getInstance().getCurrentConfig().getWebroot();
             try {
-                target = targetHandler.seekFile();
+                target = RequestTargetHandler.seekFile(
+                        webroot ,request.getRequestTarget()
+                );
             } catch (HttpParsingException e) {
-                // Handle error
-                e.printStackTrace();
+                LOGGER.error(String.valueOf(e));
+                HttpResponse.sendHttpResponse(
+                        outputStream,
+                        e.getErrorCode(),
+                        e.getMessage()
+                );
+
             }
 
+            HttpResponse.sendHttpResponse(
+                    outputStream,
+                    HttpStatusCode.CLIENT_OK_200,
+                    "OK",
+                    target
+            );
 
-            String html = "<html> <head><title>Me pica el huevo izquierdo</title></head> <body ><h1 style=\"color=\"red\"\">WHY DO YOU CUM</h1></body> </html>";
-            final String CRLF = "\r\n";
-
-            // We build an HTTP response
-            String response =
-                    "HTTP/1.1 200 OK" + CRLF +
-
-                            "Content-Length: " + target.length + CRLF +
-                    CRLF;
-
-            outputStream.write(response.getBytes());
-            outputStream.write(target);
-            outputStream.write((CRLF + CRLF).getBytes());
-
-
-            LOGGER.info("* Connection finished puta.");
+            LOGGER.info("* Connection finished.");
         } catch (IOException e) {
             LOGGER.error("Problems with communication aqui funca", e);
             e.printStackTrace();

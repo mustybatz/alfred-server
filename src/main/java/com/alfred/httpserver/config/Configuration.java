@@ -3,7 +3,7 @@ package com.alfred.httpserver.config;
 /**
  * Class that holds configuration data for server to work correctly.
  */
-public class Configuration {
+public class Configuration  {
     private int port;
     private String webroot;
 

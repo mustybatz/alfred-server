@@ -15,5 +15,4 @@ public class HttpConfigurationExeption extends RuntimeException{
     public HttpConfigurationExeption(Throwable cause) {
         super(cause);
     }
-
 }
